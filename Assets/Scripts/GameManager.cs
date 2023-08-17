@@ -45,7 +45,8 @@ public class GameManager : MonoBehaviour
                 if (gameplayTimer >= gameplayLenght)
                 {
                     gameState = GameState.endgame;
-                    //Bomb Explotes
+                    bomb.Explote();
+                    bomb.Invoke("ResetBomb" , 1.5f);
                     break;
                 }
                 else
@@ -66,6 +67,9 @@ public class GameManager : MonoBehaviour
     {
         gameState = GameState.initializing;
         multiplier = 1;
+        bomb.multiplierTxt.text = "X" + multiplier;
+        bomb.ResetBomb();
+        bomb.LightUp();
         CalculateGameplayLenght();
         StartCoroutine(GameplayTimer());
     }
@@ -84,7 +88,8 @@ public class GameManager : MonoBehaviour
         {
             if (timer <= 0)
             {
-                gameState = GameState.playing;
+                bomb.StartGameplay();
+                gameState = GameState.playing;                
                 break;
             }
             else
