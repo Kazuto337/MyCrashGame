@@ -39,5 +39,6 @@ public class BetBehavior : MonoBehaviour
     public void ConfirmBet()
     {
         userStats.totalBet = currentBet;
+        GameManager.confirmedBet();
     }
 }

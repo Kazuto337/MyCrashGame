@@ -17,50 +17,21 @@ public class GameManager : MonoBehaviour
     }
 
     [SerializeField] GameState gameState;
+    [SerializeField, Range(0.2f, 0.5f)] float multiplierIncreaseFactor; //Determines how much the multiplier increase each second (Default 0.2)
     [SerializeField] float timeBeforeGameplay, gameplayLenght;
     [SerializeField] float gameplayTimer;
     private float multiplier;
     [SerializeField] BombBehavior bomb;
-    
+
 
     private void Start()
     {
-        gameState = GameState.bet;// Delete in case of need a persistence system
+        gameState = GameState.bet;// Delete in case of needing a persistence system
     }
     private void OnEnable()
     {
         confirmedBet += InitializeGameplay;
         canceledBed += ReturnToBetState;
-    }
-
-    private void Update()
-    {
-        switch (gameState)
-        {
-            case GameState.bet:
-                break;
-            case GameState.initializing:
-                break;
-            case GameState.playing:                
-                if (gameplayTimer >= gameplayLenght)
-                {
-                    gameState = GameState.endgame;
-                    bomb.Explote();
-                    bomb.Invoke("ResetBomb" , 1.5f);
-                    break;
-                }
-                else
-                {
-                    gameplayTimer += 1 * Time.deltaTime;
-                    multiplier += gameplayTimer * 0.2f;
-                    bomb.multiplierTxt.text = "X" + multiplier;
-                }
-                break;
-            case GameState.endgame:
-                break;
-            default:
-                break;
-        }
     }
 
     private void InitializeGameplay()
@@ -73,9 +44,13 @@ public class GameManager : MonoBehaviour
         CalculateGameplayLenght();
         StartCoroutine(GameplayTimer());
     }
+    public void CancelGameplay()
+    {
+        StopCoroutine(GameplayTimer());
+    }
     public void CalculateGameplayLenght()
     {
-        gameplayLenght = UnityEngine.Random.Range(0 , 60);
+        gameplayLenght = UnityEngine.Random.Range(0, 15);
     }
     private void ReturnToBetState()
     {
@@ -89,7 +64,8 @@ public class GameManager : MonoBehaviour
             if (timer <= 0)
             {
                 bomb.StartGameplay();
-                gameState = GameState.playing;                
+                gameState = GameState.playing;
+                StartCoroutine(Gameplay());
                 break;
             }
             else
@@ -98,6 +74,27 @@ public class GameManager : MonoBehaviour
             }
             yield return null;
         }
+    }
+    IEnumerator Gameplay()
+    {
+        gameplayTimer = 0;
+        while (gameState == GameState.playing)
+        {
+            if (gameplayTimer >= gameplayLenght)
+            {
+                gameState = GameState.endgame;
+                bomb.Explote();
+                bomb.Invoke("ResetBomb", 5f);
+                break;
+            }
+            else
+            {
+                gameplayTimer++;
+                multiplier = 1 + gameplayTimer * multiplierIncreaseFactor;
+                bomb.multiplierTxt.text = "X" + multiplier;
+                yield return new WaitForSeconds(1);
+            }            
+        }        
     }
     private void OnDisable()
     {

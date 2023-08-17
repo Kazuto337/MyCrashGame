@@ -8,6 +8,10 @@ public class BombBehavior : MonoBehaviour
     public TMP_Text multiplierTxt;
     [SerializeField] ParticleSystem sparksVFX;
     Animator animator;
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
     public void LightUp()
     {
         sparksVFX.Play();
@@ -24,7 +28,7 @@ public class BombBehavior : MonoBehaviour
     }
     public void ResetBomb()
     {
-        animator.Play("Idle");
+        animator.SetTrigger("ResetBomb");
         multiplierTxt.color = Color.white;
     }
 }
