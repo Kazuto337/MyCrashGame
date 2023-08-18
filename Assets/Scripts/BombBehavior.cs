@@ -18,17 +18,17 @@ public class BombBehavior : MonoBehaviour
     }
     public void StartGameplay()
     {
-        animator.SetBool("IsPlaying", true);
+        animator.SetInteger("BombState", 1);
     }
     public void Explote()
     {
         multiplierTxt.color = Color.red;
         sparksVFX.Stop();
-        animator.SetBool("IsPlaying", false);
+        animator.SetInteger("BombState", 2);
     }
     public void ResetBomb()
     {
-        animator.SetTrigger("ResetBomb");
+        animator.SetInteger("BombState", 0);
         multiplierTxt.color = Color.white;
     }
 }
