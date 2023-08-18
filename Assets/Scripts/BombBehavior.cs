@@ -24,12 +24,14 @@ public class BombBehavior : MonoBehaviour
     {
         multiplierTxt.color = Color.red;
         sparksVFX.Stop();
+        sparksVFX.Clear();
         animator.SetInteger("BombState", 2);
     }
     public void ResetBomb()
     {
         animator.SetInteger("BombState", 0);
         sparksVFX.Stop();
+        sparksVFX.Clear();
         multiplierTxt.color = Color.white;
     }
 }

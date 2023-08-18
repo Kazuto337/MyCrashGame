@@ -80,16 +80,6 @@ public class GameManager : MonoBehaviour
                 betBehavior.ResetBetsBehavior();
                 break;
             }
-            else if (gameplayLenght == 0)
-            {
-                gameState = GameState.endgame;
-                bomb.Explote();
-                bomb.Invoke("ResetBomb", 5f);
-                yield return new WaitForSeconds(4f);
-                gameState = GameState.bet;
-                betBehavior.ResetBetsBehavior();
-                break;
-            }
             else
             {
                 gameplayTimer++;
