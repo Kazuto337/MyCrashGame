@@ -6,13 +6,13 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static Action confirmedBet;
-    public static Action canceledBed;
+    public static Action pulledBet;
 
     public enum GameState
     {
         bet = 0,
-        initializing,
         playing,
+        pulled,
         endgame
     }
 
@@ -22,20 +22,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] UserStatistics userStats;
     [SerializeField] BetBehavior betBehavior;
 
-    [Header("Initializing State")]
-    [SerializeField] TMP_Text timeBeforeGameplayTxt;
-    [SerializeField] float timeBeforeGameplay;
-
-
     [Header("Gameplay State")]
-    [SerializeField, Range(0.2f, 0.5f)] float multiplierIncreaseFactor; //Determines how much the multiplier increase each second (Default 0.2)
-    [SerializeField] float gameplayLenght;
+    [SerializeField, Range(0.2f, 0.5f) , Tooltip("Determines how much the multiplier increase each second (Default 0.2)")] float multiplierIncreaseFactor;
+    [SerializeField , Tooltip("Gameplay duration express in seconds")] float gameplayLenght;
     [SerializeField] float gameplayTimer;
+    
     private float multiplier;
-
     [SerializeField] BombBehavior bomb;
+    [SerializeField] TMP_Text possibleRevenueTxt;
 
-    [SerializeField] TMP_Text possibleRevenueTxt; //bet per current multiplier
+    [Header("Endgame State")]
+    [SerializeField] GameObject winPannel;    
+    [SerializeField] TMP_Text revenueTxt;
+    [Tooltip("User bet multiply by the current value of the Multplier")] public float possibleRevenue; 
 
 
     private void Start()
@@ -47,60 +46,41 @@ public class GameManager : MonoBehaviour
     private void OnEnable()
     {
         confirmedBet += InitializeGameplay;
-        canceledBed += ReturnToBetState;
+        pulledBet += PullBet;
     }
 
     private void InitializeGameplay()
     {
-        gameState = GameState.initializing;
         multiplier = 1;
         bomb.multiplierTxt.text = "X" + multiplier.ToString("F2");
         bomb.ResetBomb();
         bomb.LightUp();
         CalculateGameplayLenght();
-
-        timeBeforeGameplayTxt.text = timeBeforeGameplay.ToString("F2");
-
-        StartCoroutine(GameplayTimer());
-
     }
-    public void CalculateGameplayLenght()
+    private void CalculateGameplayLenght()
     {
         gameplayLenght = UnityEngine.Random.Range(0, 15);
-    }
-    private void ReturnToBetState()
-    {
-        gameState = GameState.bet;
-        timeBeforeGameplayTxt.text = string.Empty;
-        StopCoroutine(GameplayTimer());
-    }
-    IEnumerator GameplayTimer()
-    {
-        float timer = timeBeforeGameplay;
-        while (gameState == GameState.initializing)
-        {
-            if (timer <= 0)
-            {
-                bomb.StartGameplay();
-                gameState = GameState.playing;
-                StartCoroutine(Gameplay());
-                break;
-            }
-            else
-            {
-                timeBeforeGameplayTxt.text = timer.ToString("F2");
-                timer -= 1 * Time.deltaTime;
-            }
-            yield return null;
-        }
+
+        bomb.StartGameplay();
+        gameState = GameState.playing;
+        StartCoroutine(Gameplay());
     }
     IEnumerator Gameplay()
-    {
-        float possibleRevenue;
+    {        
         gameplayTimer = 0;
-        while (gameState == GameState.playing)
+        while (gameState == GameState.playing || gameState == GameState.pulled)
         {
             if (gameplayTimer >= gameplayLenght)
+            {
+                gameState = GameState.endgame;
+                bomb.Explote();
+                bomb.Invoke("ResetBomb", 5f);
+                yield return new WaitForSeconds(4f);
+                gameState = GameState.bet;
+                betBehavior.ResetBetsBehavior();
+                break;
+            }
+            else if (gameplayLenght == 0)
             {
                 gameState = GameState.endgame;
                 bomb.Explote();
@@ -121,9 +101,28 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    private void PullBet()
+    {
+        if (gameState == GameState.playing)
+        {
+            winPannel.SetActive(true);
+            gameState = GameState.pulled;            
+            userStats.balance += possibleRevenue;
+            StartCoroutine(ShowRevenue());
+        }
+    }
+
+    IEnumerator ShowRevenue()
+    {
+        revenueTxt.text = "$" + possibleRevenue;
+        yield return new WaitForSeconds(3f);
+        revenueTxt.text = string.Empty;
+        betBehavior.ResetBetsBehavior();
+        winPannel.SetActive(false);
+    }
     private void OnDisable()
     {
         confirmedBet -= InitializeGameplay;
-        canceledBed -= ReturnToBetState;
+        pulledBet -= PullBet;
     }
 }

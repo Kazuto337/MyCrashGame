@@ -8,7 +8,7 @@ using Unity.Mathematics;
 public class BetBehavior : MonoBehaviour
 {
     [SerializeField] TMP_InputField betInputField;
-    [SerializeField] Button confirmBetButton , cancelBetButton;
+    [SerializeField] Button confirmBetButton;
     int currentBet;
     UserStatistics userStats;
     void Start()
@@ -19,7 +19,6 @@ public class BetBehavior : MonoBehaviour
     public void ResetBetsBehavior()
     {
         confirmBetButton.gameObject.SetActive(true);
-        cancelBetButton.gameObject.SetActive(false);
         userStats.totalBet = 0;
     }
     public void ValidateValue(string value)
@@ -36,7 +35,7 @@ public class BetBehavior : MonoBehaviour
             else
             {
                 Debug.LogWarning("BET IS NOT IN THE CORRECT FORMAT");
-                castValue = 100;
+                UI_Manager.Feedback("BET IS NOT IN THE CORRECT FORMAT");
             }
         }
 
@@ -51,25 +50,15 @@ public class BetBehavior : MonoBehaviour
             userStats.totalBet = currentBet;
             userStats.balance -= userStats.totalBet;
             GameManager.confirmedBet();
-
-            confirmBetButton.gameObject.SetActive(false);            
-            cancelBetButton.gameObject.SetActive(true);
         }
         else
         {
             UI_Manager.Feedback("NOT ENOUGH CREDITS");
             confirmBetButton.gameObject.SetActive(true);
-            cancelBetButton.gameObject.SetActive(false);
         }
     }
-
-    public void CancelBet()
+    public void PullBet()
     {
-        userStats.totalBet = 0;
-        userStats.balance += userStats.totalBet;
-        GameManager.canceledBed();
-
-        confirmBetButton.gameObject.SetActive(true);
-        cancelBetButton.gameObject.SetActive(false);
+        GameManager.pulledBet();
     }
 }

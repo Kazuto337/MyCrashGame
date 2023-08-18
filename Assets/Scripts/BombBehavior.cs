@@ -29,6 +29,7 @@ public class BombBehavior : MonoBehaviour
     public void ResetBomb()
     {
         animator.SetInteger("BombState", 0);
+        sparksVFX.Stop();
         multiplierTxt.color = Color.white;
     }
 }
