@@ -1,14 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static Action confirmedBet;
     public static Action canceledBed;
 
-    enum GameState
+    public enum GameState
     {
         bet = 0,
         initializing,
@@ -16,12 +16,21 @@ public class GameManager : MonoBehaviour
         endgame
     }
 
-    [SerializeField] GameState gameState;
+    public static GameState gameState;
+
+    [Header("Game Actors")]
+    [SerializeField] UserStatistics userStats;
+    [SerializeField] BetBehavior betBehavior;
+
+    [Header("Gameplay State")]
     [SerializeField, Range(0.2f, 0.5f)] float multiplierIncreaseFactor; //Determines how much the multiplier increase each second (Default 0.2)
     [SerializeField] float timeBeforeGameplay, gameplayLenght;
     [SerializeField] float gameplayTimer;
     private float multiplier;
+
     [SerializeField] BombBehavior bomb;
+
+    [SerializeField] TMP_Text possibleRevenueTxt; //bet per current multiplier
 
 
     private void Start()
@@ -43,10 +52,7 @@ public class GameManager : MonoBehaviour
         bomb.LightUp();
         CalculateGameplayLenght();
         StartCoroutine(GameplayTimer());
-    }
-    public void CancelGameplay()
-    {
-        StopCoroutine(GameplayTimer());
+    
     }
     public void CalculateGameplayLenght()
     {
@@ -55,6 +61,7 @@ public class GameManager : MonoBehaviour
     private void ReturnToBetState()
     {
         gameState = GameState.bet;
+        StopCoroutine(GameplayTimer());
     }
     IEnumerator GameplayTimer()
     {
@@ -77,6 +84,7 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator Gameplay()
     {
+        float possibleRevenue;
         gameplayTimer = 0;
         while (gameState == GameState.playing)
         {
@@ -85,6 +93,9 @@ public class GameManager : MonoBehaviour
                 gameState = GameState.endgame;
                 bomb.Explote();
                 bomb.Invoke("ResetBomb", 5f);
+                yield return new WaitForSeconds(4f);
+                gameState = GameState.bet;
+                betBehavior.ResetBetsBehavior();
                 break;
             }
             else
@@ -92,9 +103,11 @@ public class GameManager : MonoBehaviour
                 gameplayTimer++;
                 multiplier = 1 + gameplayTimer * multiplierIncreaseFactor;
                 bomb.multiplierTxt.text = "X" + multiplier;
+                possibleRevenue = multiplier * userStats.totalBet;
+                possibleRevenueTxt.text = "$" + possibleRevenue;
                 yield return new WaitForSeconds(1);
-            }            
-        }        
+            }
+        }
     }
     private void OnDisable()
     {

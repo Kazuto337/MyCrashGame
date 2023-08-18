@@ -21,4 +21,10 @@ public class UserStatistics : MonoBehaviour
     [SerializeField] TMP_Text balanceTxt;
     [SerializeField] TMP_Text totalBetTxt;
 
+    private void Update()
+    {
+        balanceTxt.text = "$" + balance;
+        totalBetTxt.text = "$" + totalBet;
+    }
+
 }

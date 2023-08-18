@@ -8,11 +8,18 @@ using Unity.Mathematics;
 public class BetBehavior : MonoBehaviour
 {
     [SerializeField] TMP_InputField betInputField;
+    [SerializeField] Button confirmBetButton , cancelBetButton;
     int currentBet;
     UserStatistics userStats;
     void Start()
     {
         userStats = UserStatistics.instance;
+    }
+
+    public void ResetBetsBehavior()
+    {
+        confirmBetButton.gameObject.SetActive(true);
+        cancelBetButton.gameObject.SetActive(false);
     }
     public void ValidateValue(string value)
     {
@@ -33,12 +40,35 @@ public class BetBehavior : MonoBehaviour
         }
 
         currentBet = castValue;
-        betInputField.text = castValue.ToString("C");
+        betInputField.text = "$" + castValue;
     }
-
     public void ConfirmBet()
     {
-        userStats.totalBet = currentBet;
-        GameManager.confirmedBet();
+        currentBet = int.Parse(betInputField.text.Substring(1)); //the input comes in money format. The SubString Helps to ignore de coin symbol
+        if (userStats.balance >= currentBet && currentBet > 0)
+        {
+            userStats.totalBet = currentBet;
+            userStats.balance -= userStats.totalBet;
+            GameManager.confirmedBet();
+
+            confirmBetButton.gameObject.SetActive(false);
+            cancelBetButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            UI_Manager.Feedback("NOT ENOUGH CREDITS");
+            confirmBetButton.gameObject.SetActive(true);
+            cancelBetButton.gameObject.SetActive(false);
+        }
+    }
+
+    public void CancelBet()
+    {
+        userStats.totalBet = 0;
+        userStats.balance += userStats.totalBet;
+        GameManager.canceledBed();
+
+        confirmBetButton.gameObject.SetActive(true);
+        cancelBetButton.gameObject.SetActive(false);
     }
 }
