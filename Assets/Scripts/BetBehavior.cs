@@ -14,6 +14,7 @@ public class BetBehavior : MonoBehaviour
     void Start()
     {
         userStats = UserStatistics.instance;
+        currentBet = int.Parse(betInputField.text.Substring(1));
     }
 
     public void ResetBetsBehavior()
@@ -42,6 +43,53 @@ public class BetBehavior : MonoBehaviour
         currentBet = castValue;
         betInputField.text = "$" + castValue;
     }
+
+    public void IncreaseBet()
+    {
+        if (currentBet < 10)
+        {
+            currentBet += 1;
+        }
+        else if (currentBet >= 10)
+        {
+            currentBet += 10;
+        }
+        else if (currentBet >= 100)
+        {
+            currentBet += 100;
+        }
+        else
+        {
+            currentBet += 1000;
+        }
+
+        betInputField.text = "$" + currentBet;
+    }
+    public void DecreaseBet()
+    {
+        if (currentBet > 0)
+        {
+            if (currentBet < 10)
+            {
+                currentBet -= 1;
+            }
+            else if (currentBet >= 10)
+            {
+                currentBet -= 10;
+            }
+            else if (currentBet >= 100)
+            {
+                currentBet -= 100;
+            }
+            else
+            {
+                currentBet -= 1000;
+            }
+
+            betInputField.text = "$" + currentBet; 
+        }
+    }
+
     public void ConfirmBet()
     {
         currentBet = int.Parse(betInputField.text.Substring(1)); //the input comes in money format. The SubString Helps to ignore de coin symbol
