@@ -20,6 +20,7 @@ public class BetBehavior : MonoBehaviour
     {
         confirmBetButton.gameObject.SetActive(true);
         cancelBetButton.gameObject.SetActive(false);
+        userStats.totalBet = 0;
     }
     public void ValidateValue(string value)
     {
@@ -51,7 +52,7 @@ public class BetBehavior : MonoBehaviour
             userStats.balance -= userStats.totalBet;
             GameManager.confirmedBet();
 
-            confirmBetButton.gameObject.SetActive(false);
+            confirmBetButton.gameObject.SetActive(false);            
             cancelBetButton.gameObject.SetActive(true);
         }
         else

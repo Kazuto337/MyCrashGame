@@ -11,7 +11,7 @@ public class UI_Manager : MonoBehaviour
 
     [SerializeField] TMP_Text feedbackTxt;
 
-    [SerializeField] GameObject betField, gameplayField;
+    [SerializeField] GameObject betField, gameplayField , initializingField;
 
     private void Start()
     {
@@ -41,14 +41,22 @@ public class UI_Manager : MonoBehaviour
             case GameManager.GameState.bet:
                 betField.SetActive(true);
                 gameplayField.SetActive(false);
+                initializingField.SetActive(false);
+                break;
+            case GameManager.GameState.initializing:
+                betField.SetActive(false);
+                gameplayField.SetActive(false);
+                initializingField.SetActive(true);
                 break;
             case GameManager.GameState.playing:
                 betField.SetActive(false);
                 gameplayField.SetActive(true);
+                initializingField.SetActive(false);
                 break;
             case GameManager.GameState.endgame:
                 betField.SetActive(false);
-                gameplayField.SetActive(true);
+                gameplayField.SetActive(false);
+                initializingField.SetActive(false);
                 break;
         }
     }
