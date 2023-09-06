@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] BetBehavior betBehavior;
 
     [Header("Gameplay State")]
-    [SerializeField, Range(0.2f, 0.5f) , Tooltip("Determines how much the multiplier increase each second (Default 0.2)")] float multiplierIncreaseFactor;
+    [SerializeField, Range(0.01f, 0.5f) , Tooltip("Determines how much the multiplier increase each second (Default 0.2)")] float multiplierIncreaseFactor;
     [SerializeField , Tooltip("Gameplay duration express in seconds")] float gameplayLenght;
     [SerializeField] float gameplayTimer;
     
@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
     }
     private void CalculateGameplayLenght()
     {
-        gameplayLenght = UnityEngine.Random.Range(0, 15);
+        gameplayLenght = UnityEngine.Random.Range(0, 35);
 
         bomb.StartGameplay();
         gameState = GameState.playing;
@@ -80,23 +80,13 @@ public class GameManager : MonoBehaviour
                 betBehavior.ResetBetsBehavior();
                 break;
             }
-            else if (gameplayLenght == 0)
-            {
-                gameState = GameState.endgame;
-                bomb.Explote();
-                bomb.Invoke("ResetBomb", 5f);
-                yield return new WaitForSeconds(4f);
-                gameState = GameState.bet;
-                betBehavior.ResetBetsBehavior();
-                break;
-            }
             else
             {
                 gameplayTimer += 1 * Time.deltaTime;
                 multiplier = 1 * MathF.Pow(MathF.E , (multiplierIncreaseFactor * gameplayTimer));
                 bomb.multiplierTxt.text = "X" + multiplier.ToString("F2");
                 possibleRevenue = multiplier * userStats.totalBet;
-                possibleRevenueTxt.text = "$" + possibleRevenue;
+                possibleRevenueTxt.text = "$" + possibleRevenue.ToString("F2");
                 yield return null;
             }
         }
@@ -114,7 +104,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator ShowRevenue()
     {
-        revenueTxt.text = "$" + possibleRevenue;
+        revenueTxt.text = "$" + possibleRevenue.ToString("F2");
         yield return new WaitForSeconds(3f);
         revenueTxt.text = string.Empty;
         betBehavior.ResetBetsBehavior();
