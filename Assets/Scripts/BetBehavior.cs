@@ -25,7 +25,7 @@ public class BetBehavior : MonoBehaviour
     public void ValidateValue(string value)
     {
         int castValue = 0;
-        if (!int.TryParse(value, out castValue))
+        if (!int.TryParse(value.Substring(1), out castValue))
         {
             float temp = 0;
             if (float.TryParse(value, out temp))
