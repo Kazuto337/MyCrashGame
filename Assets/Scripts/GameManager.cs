@@ -92,12 +92,12 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                gameplayTimer++;
-                multiplier = 1 + gameplayTimer * multiplierIncreaseFactor;
+                gameplayTimer += 1 * Time.deltaTime;
+                multiplier = 1 * MathF.Pow(MathF.E , (multiplierIncreaseFactor * gameplayTimer));
                 bomb.multiplierTxt.text = "X" + multiplier.ToString("F2");
                 possibleRevenue = multiplier * userStats.totalBet;
                 possibleRevenueTxt.text = "$" + possibleRevenue;
-                yield return new WaitForSeconds(1);
+                yield return null;
             }
         }
     }
