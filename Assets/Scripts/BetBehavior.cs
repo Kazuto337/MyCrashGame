@@ -14,7 +14,8 @@ public class BetBehavior : MonoBehaviour
     void Start()
     {
         userStats = UserStatistics.instance;
-        currentBet = int.Parse(betInputField.text.Substring(1));
+        currentBet = 1000;
+        betInputField.text = "$" + currentBet.ToString();
     }
 
     public void ResetBetsBehavior()
@@ -25,7 +26,7 @@ public class BetBehavior : MonoBehaviour
     public void ValidateValue(string value)
     {
         int castValue = 0;
-        if (!int.TryParse(value.Substring(1), out castValue))
+        if (!int.TryParse(value, out castValue))
         {
             float temp = 0;
             if (float.TryParse(value, out temp))
@@ -105,6 +106,12 @@ public class BetBehavior : MonoBehaviour
             confirmBetButton.gameObject.SetActive(true);
         }
     }
+
+    public void OnBetInputSelection()
+    {
+        betInputField.text = currentBet.ToString();
+    }
+
     public void PullBet()
     {
         GameManager.pulledBet();
