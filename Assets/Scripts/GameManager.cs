@@ -34,7 +34,9 @@ public class GameManager : MonoBehaviour
     [Header("Endgame State")]
     [SerializeField] GameObject winPannel;    
     [SerializeField] TMP_Text revenueTxt;
-    [Tooltip("User bet multiply by the current value of the Multplier")] public float possibleRevenue; 
+    [Tooltip("User bet multiply by the current value of the Multplier")] public float possibleRevenue;
+
+    [SerializeField] TMP_Text versionTxt;   
 
 
     private void Start()
@@ -42,6 +44,8 @@ public class GameManager : MonoBehaviour
         gameState = GameState.bet;// Delete in case of needing a persistence system
         multiplier = 1;
         bomb.multiplierTxt.text = "X" + multiplier.ToString("F2");
+
+        versionTxt.text = $"v{Application.version}";
     }
     private void OnEnable()
     {
